@@ -14,7 +14,7 @@ const LinkButton = ({url="/", title='Home',onClose})=>(
 const Header = () => {
 
     const {isOpen, onOpen, onClose} = useDisclosure();
-    const isAuthenticated = false;
+    const isAuthenticated = true;
     const user = {
         role: 'admin',
     };
@@ -34,7 +34,8 @@ const logoutHandler = ()=>{
         colorScheme={'yellow'} 
         width='12' height={'12'} 
         rounded='full' 
-        position={'fixed'} 
+        position={'fixed'}
+        zIndex={'overlay'} 
         top='6' 
         left='6'>
             <RiMenu5Fill/> 
@@ -54,7 +55,7 @@ const logoutHandler = ()=>{
                         <LinkButton onClose={onClose} url="/courses" title="Browse Courses"/>
                         <LinkButton onClose={onClose} url="/request" title="Request A Course"/>
                         <LinkButton onClose={onClose} url="/contact" title="Contact Us"/>
-                        <LinkButton url="/about" title="About US"/>
+                        <LinkButton onClose={onClose} url="/about" title="About US"/>
 
                         <HStack
                         justifyContent={'space-evenly'}
