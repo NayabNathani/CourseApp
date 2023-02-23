@@ -17,12 +17,18 @@ import PaymentSuccess from './components/Payment/PaymentSuccess';
 import PaymentFail from './components/Payment/PaymentFail';
 import CoursePage from './components/CoursePage/CoursePage';
 import Profile from './components/Profile/Profile';
+import ChangePassword from './components/Profile/ChangePassword'
+import UpdateProfile from './components/Profile/UpdateProfile'
+import Users from './components/Admin/Users/Users';
+import AdminCourses from './components/Admin/AdminCourses/AdminCourses';
+import Createcourse from './components/Admin/Createcourse/Createcourse';
+import Dashboard from './components/Admin/Dashboard/Dashboard';
 
 function App() {
 
-  window.addEventListener("contextmenu",(e)=>{
-    e.preventDefault()
-  });
+  // window.addEventListener("contextmenu",(e)=>{
+  //   e.preventDefault()
+  // });
 
   return (
     <Router>
@@ -30,6 +36,8 @@ function App() {
       <Routes>
         <Route path='/' element={ <Home />  }/>
         <Route path='/profile' element={ <Profile />  }/>
+        <Route path='/changepassword' element={ <ChangePassword />  }/>
+        <Route path='/UpdateProfile' element={ <UpdateProfile />  }/>
         <Route path='/courses' element={ <Courses />  }/>
         <Route path='/course/:id' element={ <CoursePage />  }/>
         <Route path='/contact' element={ <Contact />  }/>
@@ -43,6 +51,11 @@ function App() {
         <Route path='*' element={ <NotFound />  }/>
         <Route path='/paymentsuccess' element={ <PaymentSuccess />  }/>
         <Route path='/paymentfail' element={ <PaymentFail />  }/>
+        {/* Admin Routes */}
+        <Route path='/admin/dashboard' element={ <Dashboard />  }/>
+        <Route path='/admin/createcourse' element={ <Createcourse />  }/>
+        <Route path='/admin/courses' element={ <AdminCourses/>  }/>
+        <Route path='/admin/users' element={ <Users />  }/>
         
 
       </Routes>
