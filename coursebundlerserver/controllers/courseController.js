@@ -1,9 +1,10 @@
 import {catchAsyncError} from "../middlewares/catchAsyncError.js"
 import {Course} from "../models/Course.js"
+import { Stats } from "../models/Stats.js";
 import getDataUri from "../utils/dataUri.js";
 import ErrorHandler from "../utils/errorHandler.js"
 import cloudinary from "cloudinary"
-import { Stats } from "../models/Stats.js"
+
 
 export const getAllCourses = catchAsyncError(async (req,res,next)=>{
 
@@ -191,5 +192,4 @@ Course.watch().on("change", async ()=>{
     stats[0].createdAt=new Date(Date.now());
 
     await stats[0].save();
-
 })

@@ -1,37 +1,62 @@
 import { Avatar, Button, Container, Heading, HStack, Image, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, useDisclosure, VStack } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { RiDeleteBin7Fill } from 'react-icons/ri'
 import {Link} from 'react-router-dom'
 import { fileUploadCss } from '../Auth/Register'
+import { useDispatch, useSelector } from 'react-redux'
+import { updateProfilePicture } from '../../redux/actions/profile'
+import { loadUser } from '../../redux/actions/user'
+import { toast } from 'react-hot-toast'
 
-const Profile = () => {
+const Profile = ({user}) => {
 
     const {isOpen, onOpen, onClose} = useDisclosure();
 
-    const user = {
-        name: "Ali Nayab",
-        email: "nayabnathani6@gmail.com",
-        createdAt: String(new Date().toISOString()),
-        role:'user',
-        subscription:{
-            status:"active"
-        },
-        playlist:[
-            {
-                course:"abc",
-                poster:"https://yourtechdiet.com/wp-content/uploads/2022/01/Best-AI-tools-for-Image-Processing-696x368.jpg",
-            },
-        ],
-    };
+    
+
+    // const user = {
+    //     name: "Ali Nayab",
+    //     email: "nayabnathani6@gmail.com",
+    //     createdAt: String(new Date().toISOString()),
+    //     role:'user',
+    //     subscription:{
+    //         status:"active"
+    //     },
+    //     playlist:[
+    //         {
+    //             course:"abc",
+    //             poster:"https://yourtechdiet.com/wp-content/uploads/2022/01/Best-AI-tools-for-Image-Processing-696x368.jpg",
+    //         },
+    //     ],
+    // };
 
     const removeFromPlaylistHandler = (id)=>{
         console.log(id)
     }
 
-    const changeImageSubmitHandler = (e,image) => {
+    const dispatch = useDispatch();
+    const {loading, message, error} = useSelector(state=>state.profile);
+
+    const changeImageSubmitHandler = async(e,image) => {
         e.preventDefault();
-        console.log(image)
+        const myForm = new FormData();
+
+        myForm.append('file',image);
+        
+        await dispatch(updateProfilePicture(myForm));
+        dispatch(loadUser());
     };
+
+    useEffect(() => {
+        if(error){
+          toast.error(error);
+          dispatch({type: 'clearError'});
+        }
+        if(message){
+          toast.success(message);
+          dispatch({type: 'clearMessage'});
+        }
+      }, [dispatch,error,message]);
 
   return (
     <Container
@@ -51,7 +76,7 @@ const Profile = () => {
         padding='8'
         >
             <VStack>
-                <Avatar boxSize={'48'}/>
+                <Avatar boxSize={'48'} src={user.avatar.url}/>
 
                 <Button colorScheme={'yellow'} variant={'ghost'} onClick={onOpen} >Change Photo</Button>
             </VStack>
@@ -80,7 +105,7 @@ const Profile = () => {
                         <HStack>
                             <Text children='Subscription' fontWeight={'bold'} />
                             {
-                                user.subscription.status === 'active'?
+                                user.subscription && user.subscription.status === 'active'?
                                     (<Button color={'yellow.500'} variant={'unstyled'}>Cancel Subscription</Button>):
                                     (<Link to='/subscribe'>
                                         <Button colorScheme={'yellow'}>Subscribe</Button>
@@ -140,14 +165,19 @@ const Profile = () => {
             )
         }
 
-        <ChangePhotoBox isOpen={isOpen} onClose={onClose} changeImageSubmitHandler={changeImageSubmitHandler}/> 
+        <ChangePhotoBox 
+            isOpen={isOpen} 
+            onClose={onClose} 
+            changeImageSubmitHandler={changeImageSubmitHandler}
+            loading={loading}
+            /> 
     </Container>
   )
 }
 
 export default Profile
 
-function ChangePhotoBox({isOpen,onClose,changeImageSubmitHandler}){
+function ChangePhotoBox({isOpen,onClose,changeImageSubmitHandler, loading}){
 
     const [image,setImage] = useState("");
     const [imagePrev,setImagePrev] = useState("");
@@ -185,7 +215,7 @@ function ChangePhotoBox({isOpen,onClose,changeImageSubmitHandler}){
                                 css={{"&::file-selector-button":fileUploadCss}} 
                                 onChange={changeImage}
                                 />
-                                <Button w={'full'} colorScheme='yellow' type='submit'>Confirm Change</Button>
+                                <Button isLoading={loading} w={'full'} colorScheme='yellow' type='submit'>Confirm Change</Button>
                             </VStack>
                         </form>
                     </Container>
