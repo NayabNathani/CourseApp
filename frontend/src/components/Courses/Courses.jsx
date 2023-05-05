@@ -1,8 +1,24 @@
 import { Button, Container, Heading, HStack, Image, Input, Stack, Text, VStack } from '@chakra-ui/react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { getAllCourses } from '../../redux/actions/course'
+import { toast } from 'react-hot-toast'
+import { addToPlaylist } from "../../redux/actions/profile"
+import { loadUser } from "../../redux/actions/user"
 
-const Course = ({views,title,imageSrc,id,addtoPlaylistHandler,creator,description, lecture})=>{
+const Course = (
+    {
+        views,
+        title,
+        imageSrc,
+        id,
+        addtoPlaylistHandler,
+        creator,
+        description, 
+        lecture,
+        loading
+    })=>{
 
     return(
         <VStack className='course' alignItems={['center','flex-start']}>
@@ -53,6 +69,7 @@ const Course = ({views,title,imageSrc,id,addtoPlaylistHandler,creator,descriptio
                 variant={'ghost'} 
                 colorScheme={'yellow'}
                 onClick={()=>addtoPlaylistHandler(id)}
+                isLoading={loading}
                 >
                     Add To Playlist
                 </Button>
@@ -65,6 +82,8 @@ const Courses = () => {
 
     const [keyword, setKeyword] = useState("");
     const [category, setCategory] = useState("");
+    const dispatch = useDispatch();
+    const {loading, courses, error, message} = useSelector(state=>state.course);
 
     const categories = [
         'Web Development',
@@ -75,9 +94,23 @@ const Courses = () => {
         'Game Development'
     ];
 
-    const addtoPlaylistHandler = ()=>{
-        console.log('added to playlist')
-    }
+    const addtoPlaylistHandler = async (courseId)=>{
+       await dispatch(addToPlaylist(courseId));
+       dispatch(loadUser());
+    };
+
+    useEffect(() => {
+        dispatch(getAllCourses(category,keyword));
+        if(error){
+            toast.error(error);
+            dispatch({type:"clearError"});
+        }
+        if(message){
+            toast.success(message);
+            dispatch({type:"clearMessage"});
+        }
+    }, [category,keyword,dispatch, error, message]);
+    
 
   return (
     <Container
@@ -119,7 +152,7 @@ const Courses = () => {
         justifyContent={['flex-start','space-evenly']}
         alignItems={['center','flex-start']}
         >
-            <Course 
+        {/* <Course 
             title={'Sample'}
             description={'Sample'}
             views={23}
@@ -128,7 +161,27 @@ const Courses = () => {
             creator={'Sample Boy'}
             lecture={2}
             addtoPlaylistHandler={addtoPlaylistHandler}
-            />
+        /> */}
+
+            { courses.length > 0?
+                courses.map((item)=>
+                    (
+                        <Course
+                        key={item._id}
+                        title={item.title}
+                        description={item.description}
+                        views={item.views}
+                        imageSrc={item.poster.url}
+                        id={item._id}
+                        creator={item.createBy}
+                        lecture={item.numOfVideos}
+                        addtoPlaylistHandler={addtoPlaylistHandler}
+                        loading={loading}
+                        />
+                    )
+                ):
+                <Heading mt='4'>Course Not Found!!</Heading>
+            }
         </Stack>
     </Container>
   )

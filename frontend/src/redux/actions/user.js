@@ -50,7 +50,7 @@ export const loadUser = () => async(dispatch)=>{
     } catch (error) {
         dispatch({type:"loadUserFail", payload: error.response.data.message});
     }
-}
+};
 
 export const logout = () => async(dispatch)=>{
     try {
@@ -65,5 +65,7 @@ export const logout = () => async(dispatch)=>{
     } catch (error) {
         dispatch({type:"logoutFail", payload: error.response.data.message});
     }
-}
+};
+
+
 
