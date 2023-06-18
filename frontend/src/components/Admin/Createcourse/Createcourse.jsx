@@ -1,8 +1,11 @@
 import { Button, Container, Grid, Heading, Image, Input, Select, VStack } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import cursor from '../../../assests/images/cursor.png'
 import { fileUploadCss } from '../../Auth/Register';
 import Sidebar from '../Sidebar';
+import { useDispatch, useSelector } from 'react-redux';
+import { createCourse } from '../../../redux/actions/admin';
+import { toast } from 'react-hot-toast';
 
 
 const Createcourse = () => {
@@ -13,6 +16,9 @@ const Createcourse = () => {
   const [category,setCategory] = useState('');
   const [image,setImage] = useState('');
   const [imageprev,setImagePrev] = useState('');
+  const dispatch = useDispatch();
+
+  const {loading,error,message} = useSelector(state=>state.admin)
 
   const categories = [
     'Web Development',
@@ -34,6 +40,30 @@ const changeImageHandler = (e)=>{
   };
 };
 
+const submitHandler = (e)=>{
+  e.preventDefault();
+  const myForm = new FormData();
+
+  myForm.append('title',title);
+  myForm.append('description',description);
+  myForm.append('category',category);
+  myForm.append('createdBy',createdBy);
+  myForm.append('file',image);
+  dispatch(createCourse(myForm))
+};
+
+useEffect(() => {
+  if (error) {
+    toast.error(error);
+    dispatch({ type: 'clearError' });
+  }
+
+  if (message) {
+    toast.success(message);
+    dispatch({ type: 'clearMessage' });
+  }
+}, [dispatch, error, message]);
+
 
   return (
     <Grid 
@@ -44,6 +74,7 @@ const changeImageHandler = (e)=>{
         }}
 >
   <Container py={'16'}>
+    <form onSubmit={submitHandler}>
     <Heading 
     textTransform={'uppercase'}
     my='16'
@@ -103,9 +134,9 @@ const changeImageHandler = (e)=>{
         <Image src={imageprev} boxSize='64' objectFit={'contain'}/>
       )}
 
-      <Button w='full' colorScheme={'purple'} type='submit'>Create</Button>
+      <Button isLoading={loading} w='full' colorScheme={'purple'} type='submit'>Create</Button>
     </VStack>
-
+    </form>
   </Container>
     <Sidebar/>
 </Grid>

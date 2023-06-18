@@ -1,7 +1,7 @@
 import { server } from "../store";
 import axios from 'axios';
 
-export const getAllCourses = (category="", keyword='') => async(dispatch)=>{
+export const getAllCourses = (category="", keyword="") => async(dispatch)=>{
     try {
         dispatch({type:"allCoursesRequest"});
 
@@ -14,13 +14,15 @@ export const getAllCourses = (category="", keyword='') => async(dispatch)=>{
 
 export const getCourseLectures = id => async(dispatch)=>{
     try {
+        // console.log("inside Course Lecture");
         dispatch({type:"getCourseRequest"});
 
-        const {data} = await axios.get(`${server}/course/${id}`,{
+        const { data } = await axios.get(`${server}/course/${id}`,{
             withCredentials: true,
         });
 
         dispatch({type:"getCourseSuccess", payload: data.lectures});
+        // console.log("inside Course Lecture2");
 
     } catch (error) {
         dispatch({
@@ -28,4 +30,5 @@ export const getCourseLectures = id => async(dispatch)=>{
             payload: error.response.data.message});
     }
 };
+
 

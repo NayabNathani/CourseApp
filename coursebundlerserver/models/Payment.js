@@ -12,7 +12,7 @@ const schema = new mongoose.Schema({
         required:true,
     },
 
-    razorpay_subsciption_id:{
+    razorpay_subscription_id:{
         type: String,
         required:true,
     },

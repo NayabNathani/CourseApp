@@ -5,39 +5,26 @@ import {Link} from 'react-router-dom'
 import { fileUploadCss } from '../Auth/Register'
 import { useDispatch, useSelector } from 'react-redux'
 import { removeFromPlaylist, updateProfilePicture } from '../../redux/actions/profile'
-import { loadUser } from '../../redux/actions/user'
+import { cancelSubscription, loadUser } from '../../redux/actions/user'
 import { toast } from 'react-hot-toast'
 
 const Profile = ({user}) => {
 
     const {isOpen, onOpen, onClose} = useDisclosure();
 
-    
-
-    // const user = {
-    //     name: "Ali Nayab",
-    //     email: "nayabnathani6@gmail.com",
-    //     createdAt: String(new Date().toISOString()),
-    //     role:'user',
-    //     subscription:{
-    //         status:"active"
-    //     },
-    //     playlist:[
-    //         {
-    //             course:"abc",
-    //             poster:"https://yourtechdiet.com/wp-content/uploads/2022/01/Best-AI-tools-for-Image-Processing-696x368.jpg",
-    //         },
-    //     ],
-    // };
+    const dispatch = useDispatch();
+    const {loading, message, error} = useSelector(state=>state.profile);
+    const {
+        loading:subscriptionLoading, 
+        message:subscriptionMessage, 
+        error:subscriptionError
+    } = useSelector(state=>state.subscription);
 
     const removeFromPlaylistHandler = async (id)=>{
         console.log(id)
         await dispatch(removeFromPlaylist(id));
         dispatch(loadUser());
     }
-
-    const dispatch = useDispatch();
-    const {loading, message, error} = useSelector(state=>state.profile);
 
     const changeImageSubmitHandler = async(e,image) => {
         e.preventDefault();
@@ -49,6 +36,10 @@ const Profile = ({user}) => {
         dispatch(loadUser());
     };
 
+    const cancelSubscriptionHandler = async()=>{
+        await dispatch(cancelSubscription());
+    };
+
     useEffect(() => {
         if(error){
           toast.error(error);
@@ -58,7 +49,16 @@ const Profile = ({user}) => {
           toast.success(message);
           dispatch({type: 'clearMessage'});
         }
-      }, [dispatch,error,message]);
+        if(subscriptionError){
+            toast.error(error)
+            dispatch({type: 'clearError'});
+        }
+        if(subscriptionMessage){
+            toast.success(message);
+            dispatch({type: 'clearMessage'});
+            dispatch(loadUser());
+          }
+      }, [dispatch,error,message,subscriptionMessage,subscriptionError]);
 
   return (
     <Container
@@ -108,7 +108,7 @@ const Profile = ({user}) => {
                             <Text children='Subscription' fontWeight={'bold'} />
                             {
                                 user.subscription && user.subscription.status === 'active'?
-                                    (<Button color={'yellow.500'} variant={'unstyled'}>Cancel Subscription</Button>):
+                                    (<Button color={'yellow.500'} variant={'unstyled'} onClick={cancelSubscriptionHandler} isLoading={subscriptionLoading}>Cancel Subscription</Button>):
                                     (<Link to='/subscribe'>
                                         <Button colorScheme={'yellow'}>Subscribe</Button>
                                     </Link> )

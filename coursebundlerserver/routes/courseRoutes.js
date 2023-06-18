@@ -11,7 +11,8 @@ router.route("/courses").get(getAllCourses);
 router.route("/createcourse").post(isAuthenticated, authorizeAdmin ,singleUpload ,createCourse);
 
 //Add lecture,delete course, get course details
-router.route("/course/:id").get(isAuthenticated, authorizeSubscribers, getCourseLectures).
+router.route("/course/:id").
+get(isAuthenticated, authorizeSubscribers, getCourseLectures).
 post(isAuthenticated, authorizeAdmin,singleUpload, addLecture).
 delete(isAuthenticated, authorizeAdmin, deleteCourse);
 

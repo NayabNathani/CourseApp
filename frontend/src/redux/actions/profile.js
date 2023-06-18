@@ -122,8 +122,7 @@ export const removeFromPlaylist = id => async(dispatch)=>{
             withCredentials:true,
         }
 
-        const {data} = await axios.delete(`${server}/removefromplaylist?${id}`,
-        config
+        const { data } = await axios.delete(`${server}/removefromplaylist?id=${id}`, config
         );
 
         dispatch({type:"removeFromPlaylistSuccess", payload: data.message});
